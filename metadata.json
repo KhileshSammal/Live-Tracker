@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Tracker Pro",
+  "description": "A high-performance real-time cyclist tracking application with SOS alerts, gap monitoring, and environmental optimization for bike trips.",
+  "requestFramePermissions": [
+    "geolocation",
+    "microphone"
+  ]
+}
