@@ -146,7 +146,7 @@ const App: React.FC = () => {
   };
 
   const handleRemoveMember = (id: string) => {
-    if (id === config.currentUserEntityId) return; // Prevent removing self
+    if (id === config.currentUserEntityId) return;
     const member = entities.find(e => e.id === id);
     setEntities(prev => prev.filter(e => e.id !== id));
     if (config.activeEntityId === id) {
@@ -382,46 +382,38 @@ const App: React.FC = () => {
   return (
     <div className={`flex flex-col h-screen w-full bg-[#f8f9fa] overflow-hidden font-sans text-slate-900 ${config.sunlightMode ? 'high-contrast' : ''}`}>
       
-      {/* Premium Floating Search & Navigation Bar */}
-      <div className="absolute top-4 left-4 right-4 z-[1001] max-w-lg md:mx-auto">
-        <div className="group flex items-center h-14 bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 px-4 gap-3 transition-all focus-within:ring-2 focus-within:ring-blue-500/20">
+      {/* Redesigned Floating Search Bar - Native Mobile Look */}
+      <div className="absolute top-4 left-4 right-4 z-[1001] pt-safe">
+        <div className="flex items-center h-14 bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/50 px-3 gap-2 transition-all focus-within:ring-2 focus-within:ring-blue-500/20">
           <button 
             onClick={() => setIsSidebarOpen(true)} 
             className="w-10 h-10 flex items-center justify-center hover:bg-slate-100 rounded-full transition-colors active:scale-90"
           >
             <svg className="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"/>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
           </button>
           <input 
             type="text" 
-            placeholder={config.destination ? `To: ${config.destination}` : "Navigate to..."} 
-            className="flex-1 bg-transparent border-none outline-none text-[15px] font-semibold text-slate-800 placeholder:text-slate-400"
+            placeholder={config.destination ? `To: ${config.destination}` : "Search destination..."} 
+            className="flex-1 bg-transparent border-none outline-none text-[16px] font-semibold text-slate-800 placeholder:text-slate-400 placeholder:font-medium"
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleMultiModalRoute((e.target as HTMLInputElement).value);
             }}
           />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {isSearching ? (
               <div className="w-5 h-5 border-[2.5px] border-blue-600 border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-              </svg>
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+              </div>
             )}
-            <div className="w-8 h-8 rounded-xl bg-blue-600 shadow-md shadow-blue-200 flex items-center justify-center text-white text-[10px] font-black tracking-tight">NX</div>
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200 flex items-center justify-center text-white text-[11px] font-black tracking-tight">PT</div>
           </div>
         </div>
-      </div>
-
-      {/* Floating Map Layers (Top Right) */}
-      <div className="absolute top-[84px] right-4 z-[1000] flex flex-col gap-3">
-        <button 
-          onClick={() => setConfig(prev => ({...prev, sunlightMode: !prev.sunlightMode}))}
-          className={`w-11 h-11 bg-white/95 backdrop-blur-md rounded-2xl shadow-lg flex items-center justify-center transition-all active:scale-90 border border-slate-100 ${config.sunlightMode ? 'text-blue-600' : 'text-slate-500'}`}
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-        </button>
       </div>
 
       <main className="flex-1 relative">
@@ -430,9 +422,9 @@ const App: React.FC = () => {
           
           <Polyline 
             positions={(config.dynamicRoute || PLANNED_ROUTE).map(p => [p.lat, p.lng])} 
-            color="#4285F4" 
+            color="#3b82f6" 
             weight={7} 
-            opacity={0.85}
+            opacity={0.8}
             lineCap="round"
             lineJoin="round"
           />
@@ -444,29 +436,29 @@ const App: React.FC = () => {
           </MarkerClusterGroup>
 
           {entities.filter(e => e.type === 'SupportCar').map(car => (
-            <Circle key={`danger-${car.id}`} center={[car.location.lat, car.location.lng]} radius={45} pathOptions={{ color: '#ea4335', weight: 1.5, fillColor: '#ea4335', fillOpacity: 0.12 }} />
+            <Circle key={`danger-${car.id}`} center={[car.location.lat, car.location.lng]} radius={45} pathOptions={{ color: '#ef4444', weight: 1.5, fillColor: '#ef4444', fillOpacity: 0.1 }} />
           ))}
 
           <MapUpdater activeEntity={activeEntity} recenterTrigger={recenterTrigger} />
         </MapContainer>
 
-        {/* Improved Navigation HUD - Visual Priority for Active Guidance */}
+        {/* Refined Navigation HUD - Premium Visuals */}
         {config.isRiding && rideStats.nextInstruction && (
-          <div className="absolute top-[84px] left-4 right-20 z-[1000] flex justify-center pointer-events-none">
-            <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-2xl text-white p-4 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-5 border border-white/10 animate-in slide-in-from-top-6 duration-700">
-               <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center border border-white/20 shadow-inner">
-                  {rideStats.nextInstruction.maneuver === 'turn-left' && <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>}
-                  {rideStats.nextInstruction.maneuver === 'turn-right' && <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>}
-                  {rideStats.nextInstruction.maneuver === 'straight' && <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>}
-                  {rideStats.nextInstruction.maneuver === 'arrival' && <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>}
+          <div className="absolute top-[90px] left-4 right-4 z-[1000] flex justify-center pointer-events-none">
+            <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-xl text-white p-3 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/10 animate-in slide-in-from-top-4 duration-500">
+               <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                  {rideStats.nextInstruction.maneuver === 'turn-left' && <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>}
+                  {rideStats.nextInstruction.maneuver === 'turn-right' && <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>}
+                  {rideStats.nextInstruction.maneuver === 'straight' && <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>}
+                  {rideStats.nextInstruction.maneuver === 'arrival' && <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>}
                </div>
-               <div className="flex-1 flex flex-col min-w-0">
-                  <span className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-400 mb-0.5">Maneuver</span>
-                  <span className="text-base font-black leading-tight truncate uppercase tracking-tight">{rideStats.nextInstruction.text}</span>
+               <div className="flex-1 min-w-0">
+                  <span className="text-[10px] font-black uppercase text-blue-400 block tracking-wider">Next Step</span>
+                  <span className="text-[15px] font-bold leading-tight truncate block uppercase tracking-tight">{rideStats.nextInstruction.text}</span>
                </div>
-               <div className="flex flex-col items-center bg-white/10 px-4 py-2 rounded-2xl border border-white/5">
-                  <span className="text-2xl font-black tabular-nums">{Math.round(rideStats.nextInstruction.distanceMeters)}</span>
-                  <span className="text-[9px] font-bold uppercase opacity-50 tracking-widest">m</span>
+               <div className="bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 text-center min-w-[60px]">
+                  <span className="text-xl font-black tabular-nums block">{Math.round(rideStats.nextInstruction.distanceMeters)}</span>
+                  <span className="text-[9px] font-bold uppercase opacity-60 block tracking-widest">m</span>
                </div>
             </div>
           </div>
@@ -476,6 +468,8 @@ const App: React.FC = () => {
           isSOSActive={!!entities.find(e => e.id === config.currentUserEntityId)?.isSOS}
           onToggleSOS={() => setEntities(prev => prev.map(e => e.id === config.currentUserEntityId ? { ...e, isSOS: !e.isSOS } : e))}
           onRecenter={() => setRecenterTrigger(prev => prev + 1)}
+          sunlightMode={config.sunlightMode}
+          onToggleSunlight={() => setConfig(prev => ({...prev, sunlightMode: !prev.sunlightMode}))}
         />
 
         <Dashboard 
